@@ -1,6 +1,8 @@
 import sqlite3
 from contextlib import closing
 
+
+
 def create_database():
     with closing(sqlite3.connect("database.db")) as conn:
         with conn:

@@ -1,7 +1,7 @@
-import database
+import db
 
 def main():
-    database.create_database()
+    db.create_database()
 
 if __name__ == "__main__":
     main()
