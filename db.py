@@ -1,6 +1,13 @@
 import sqlite3
 from contextlib import closing
+from data import Member
 
+
+class DuplicateError(Exception):
+    pass
+
+def create_member(member : Member) -> int:
+    pass
 
 
 def create_database():
