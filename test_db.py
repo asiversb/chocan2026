@@ -22,7 +22,7 @@ invalid_member = Member(
     "work?"
 )
 
-def test_create_member_valid(valid_member):
+def test_create_member_valid():
     member_number = db.create_member(valid_member)
 
     with closing(sqlite3.connect("database.db")) as conn:
@@ -46,11 +46,11 @@ def test_create_member_valid(valid_member):
 
 
 
-def test_create_member_duplicate(valid_member):
+def test_create_member_duplicate():
     with pytest.raises(db.DuplicateError):
         db.create_member(valid_member)
 
-def test_create_member_invalid(invalid_member):
+def test_create_member_invalid():
     with pytest.raises(ValueError):
         db.create_member(invalid_member)
 
