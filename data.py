@@ -52,8 +52,8 @@ class Transactions:
     member_name: str
     member_number: str    #str for leading 0's?
     service_code: str     #str for leading 0's?
-    comment: str = ""
     fee: int #in cents for math precision 
+    comment: str = ""
 
     def __post_init__(self) -> None:
         try:
