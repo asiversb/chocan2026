@@ -58,7 +58,7 @@ def test_create_member_invalid():
 
 def test_create_member_wrong_type():
     with pytest.raises(ValueError):
-        db.create_member("test")
+        db.create_member("test", "test_database.db")
 
 def test_delete_test_database():
     assert db.delete_test_database() == 0
