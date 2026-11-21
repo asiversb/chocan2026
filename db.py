@@ -1,7 +1,84 @@
 import sqlite3
 import os
 from contextlib import closing
-from data import Member, Provider
+from data import Member, Provider, Service
+
+def insert_service(service: Service, database: str = "database.db") -> int:
+    if type(service) is not Service:
+        raise ValueError("Expected a service")
+
+    with closing(sqlite3.connect(database)) as conn:
+        with conn:
+            cursor = conn.cursor()
+
+            cursor.execute("""
+                INSERT INTO services (
+                    number, name, fee
+                )
+                VALUES (?, ?, ?)
+            """, (int(service.number), service.name, service.fee)
+            )
+                
+    return int(service.number)
+
+def get_service(num: str, database: str = "database.db") -> Service | None:
+    num = int(num)
+
+    with closing(sqlite3.connect(database)) as conn:
+        with conn:
+            cursor = conn.cursor()
+
+            cursor.execute(
+                "SELECT * FROM services WHERE number = ?",
+                (num,)
+            )
+
+            result = cursor.fetchone()
+
+    if result is None:
+        return None
+    
+    ser_num = str(result[0])
+    while len(ser_num) < 6:
+        ser_num = '0' + ser_num
+
+    return Service(ser_num, result[1], result[2])
+
+def update_service(service: Service, database: str = "database.db") -> bool:
+    if type(service) is not Service:
+        raise ValueError("Expected a service") 
+
+    with closing(sqlite3.connect(database)) as conn:
+        with conn:
+            cursor = conn.cursor()
+
+            cursor.execute(
+                """ 
+                UPDATE services
+                SET name = ?, fee = ?
+                WHERE number = ?
+                """ ,
+                (service.name, service.fee, int(service.number))
+            )
+
+        if cursor.rowcount == 0:
+            return False
+
+    return True 
+
+def delete_service(num: str, database: str = "database.db") -> bool:
+    num = int(num)
+
+    with closing(sqlite3.connect(database)) as conn:
+        with conn:
+            cursor = conn.cursor() 
+
+            cursor.execute(
+                "DELETE FROM services WHERE number = ?",
+                (num,)
+            )
+
+            return cursor.rowcount
 
 def insert_provider(provider: Provider, database: str = "database.db") -> int:
     if type(provider) is not Provider:
