@@ -44,6 +44,28 @@ def get_service(num: str, database: str = "database.db") -> Service | None:
 
     return Service(ser_num, result[1], result[2])
 
+def update_service(service: Service, database: str = "database.db") -> bool:
+    if type(service) is not Service:
+        raise ValueError("Expected a service") 
+
+    with closing(sqlite3.connect(database)) as conn:
+        with conn:
+            cursor = conn.cursor()
+
+            cursor.execute(
+                """ 
+                UPDATE services
+                SET name = ?, fee = ?
+                WHERE number = ?
+                """ ,
+                (service.name, service.fee, int(service.number))
+            )
+
+        if cursor.rowcount == 0:
+            return False
+
+    return True 
+
 def insert_provider(provider: Provider, database: str = "database.db") -> int:
     if type(provider) is not Provider:
         raise ValueError("Expected a provider")
