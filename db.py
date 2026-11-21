@@ -4,7 +4,7 @@ from contextlib import closing
 from data import Member
 
 
-def insert_member(member : Member, database : str = "database.db") -> int:
+def insert_member(member: Member, database: str = "database.db") -> int:
     if type(member) is not Member:
         raise ValueError("Expected a Member")
 
@@ -25,6 +25,34 @@ def insert_member(member : Member, database : str = "database.db") -> int:
             ))
                 
     return int(member.number)
+
+
+def get_member(num: str, database: str = "database.db") -> Member | None:
+    num = int(num)
+
+    with closing(sqlite3.connect(database)) as conn:
+        with conn:
+            cursor = conn.cursor()
+
+            cursor.execute(
+                "SELECT * FROM members WHERE number = ?",
+                (num,)
+            )
+
+            result = cursor.fetchone()
+
+    if result is None:
+        return None
+    
+    mem_num = str(result[0])
+    while len(mem_num) < 9:
+        mem_num = '0' + mem_num
+    zip = str(result[5])
+    while len(zip) < 5:
+        zip = '0' + zip
+
+    return Member(mem_num, result[1], result[2], result[3], result[4],
+                zip, result[6], result[7])
 
 
 def delete_test_database() -> int:
@@ -83,6 +111,8 @@ def create_test_database() -> int:
 
             """)
     return 0
+
+
 
 def create_database():
     with closing(sqlite3.connect("database.db")) as conn:

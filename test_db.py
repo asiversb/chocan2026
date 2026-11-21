@@ -5,12 +5,12 @@ import db
 from data import Member
 
 valid_member = Member(
-    "123456789",
+    "003456789",
     "John Smith",
     "1234 Street",
     "Portand",
     "OR",
-    "12345"
+    "00345"
 )
 
 invalid_member = Member(
@@ -37,16 +37,14 @@ def test_insert_member_valid():
             ).fetchone()
 
     assert result is not None
-    assert result[0] == 123456789
+    assert result[0] == 3456789
     assert result[1] == "John Smith"
     assert result[2] == "1234 Street"
     assert result[3] == "Portand"
     assert result[4] == "OR"
-    assert result[5] == 12345
+    assert result[5] == 345
     assert result[6] == 0
     assert result[7] == 0
-
-
 
 def test_insert_member_duplicate():
     with pytest.raises(sqlite3.IntegrityError):
@@ -59,6 +57,16 @@ def test_insert_member_invalid():
 def test_insert_member_wrong_type():
     with pytest.raises(ValueError):
         db.insert_member("test", "test_database.db")
+
+def test_get_member_valid():
+    assert valid_member == db.get_member(valid_member.number, "test_database.db")
+
+def test_get_member_invalid():
+    with pytest.raises(ValueError):
+        db.get_member(invalid_member.number, "test_database.db")
+
+def test_get_member_doesnt_exist():
+    assert None == db.get_member("987654321", "test_database.db")
 
 def test_delete_test_database():
     assert db.delete_test_database() == 0
