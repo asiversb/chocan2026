@@ -49,6 +49,30 @@ def get_provider(num: str, database: str = "database.db") -> Provider | None:
 
     return Provider(pro_num, result[1], result[2], result[3], result[4], zip)
 
+def update_provider(provider: Provider, database: str = "database.db") -> bool:
+    if type(provider) is not Provider:
+        raise ValueError("Expected a provider") 
+
+    with closing(sqlite3.connect(database)) as conn:
+        with conn:
+            cursor = conn.cursor()
+
+            cursor.execute(
+                """ 
+                UPDATE providers
+                SET name = ?, street = ?, city = ?,
+                state = ?, zip_code = ?
+                WHERE number = ?
+                """ ,
+                (provider.name, provider.street, provider.city,
+                provider.state, int(provider.zip_code), int(provider.number))
+            )
+
+        if cursor.rowcount == 0:
+            return False
+
+    return True 
+
 def insert_member(member: Member, database: str = "database.db") -> int:
     if type(member) is not Member:
         raise ValueError("Expected a Member")

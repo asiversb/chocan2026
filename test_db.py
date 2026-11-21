@@ -86,6 +86,22 @@ def test_get_provider_invalid():
 def test_get_provider_doesnt_exist():
     assert None == db.get_provider("987654321", "test_database.db")
 
+def test_update_provider_valid():
+    valid_provider.name = "Jane Smith"
+    assert True == db.update_provider(valid_provider, "test_database.db")
+    assert db.get_provider(valid_provider.number, "test_database.db").name == "Jane Smith"
+
+def test_update_provider_invalid():
+    with pytest.raises(ValueError):
+        db.update_provider(invalid_provider, "test_database.db")
+
+def test_update_provider_wrong_type():
+    with pytest.raises(ValueError):
+        db.update_provider("test", "test_database.db")
+
+def test_update_provider_doesnt_exist():
+    de = Provider("444444444","e", "e", "e", "EE", "55555")
+    assert False == db.update_provider(de, "test_database.db")
 
 def test_insert_member_valid():
     member_number = db.insert_member(valid_member, "test_database.db")
