@@ -73,6 +73,20 @@ def update_provider(provider: Provider, database: str = "database.db") -> bool:
 
     return True 
 
+def delete_provider(num: str, database: str = "database.db") -> bool:
+    num = int(num)
+
+    with closing(sqlite3.connect(database)) as conn:
+        with conn:
+            cursor = conn.cursor() 
+
+            cursor.execute(
+                "DELETE FROM providers WHERE number = ?",
+                (num,)
+            )
+
+            return cursor.rowcount
+
 def insert_member(member: Member, database: str = "database.db") -> int:
     if type(member) is not Member:
         raise ValueError("Expected a Member")

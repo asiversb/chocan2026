@@ -103,6 +103,16 @@ def test_update_provider_doesnt_exist():
     de = Provider("444444444","e", "e", "e", "EE", "55555")
     assert False == db.update_provider(de, "test_database.db")
 
+def test_delete_provider_valid():
+    assert True == db.delete_provider(valid_provider.number, "test_database.db")
+
+def test_delete_provider_doesnt_exist():
+    assert False == db.delete_provider(valid_provider.number, "test_database.db")
+
+def test_delete_provider_invalid():
+    with pytest.raises(ValueError):
+        db.delete_provider(invalid_provider.number, "test_database.db")
+
 def test_insert_member_valid():
     member_number = db.insert_member(valid_member, "test_database.db")
 
