@@ -24,8 +24,8 @@ invalid_member = Member(
 def test_create_test_database():
     assert db.create_test_database() == 0
 
-def test_create_member_valid():
-    member_number = db.create_member(valid_member, "test_database.db")
+def test_insert_member_valid():
+    member_number = db.insert_member(valid_member, "test_database.db")
 
     with closing(sqlite3.connect("test_database.db")) as conn:
         with conn:
@@ -48,17 +48,17 @@ def test_create_member_valid():
 
 
 
-def test_create_member_duplicate():
+def test_insert_member_duplicate():
     with pytest.raises(sqlite3.IntegrityError):
-        db.create_member(valid_member, "test_database.db")
+        db.insert_member(valid_member, "test_database.db")
 
-def test_create_member_invalid():
+def test_insert_member_invalid():
     with pytest.raises(ValueError):
-        db.create_member(invalid_member, "test_database.db")
+        db.insert_member(invalid_member, "test_database.db")
 
-def test_create_member_wrong_type():
+def test_insert_member_wrong_type():
     with pytest.raises(ValueError):
-        db.create_member("test", "test_database.db")
+        db.insert_member("test", "test_database.db")
 
 def test_delete_test_database():
     assert db.delete_test_database() == 0

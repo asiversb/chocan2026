@@ -4,7 +4,7 @@ from contextlib import closing
 from data import Member
 
 
-def create_member(member : Member, database : str = "database.db") -> int:
+def insert_member(member : Member, database : str = "database.db") -> int:
     if type(member) is not Member:
         raise ValueError("Expected a Member")
 
