@@ -21,7 +21,33 @@ def insert_provider(provider: Provider, database: str = "database.db") -> int:
                 provider.city, provider.state, int(provider.zip_code)
             ))
                 
-    return int(provider.number) 
+    return int(provider.number)
+
+def get_provider(num: str, database: str = "database.db") -> Provider | None:
+    num = int(num)
+
+    with closing(sqlite3.connect(database)) as conn:
+        with conn:
+            cursor = conn.cursor()
+
+            cursor.execute(
+                "SELECT * FROM providers WHERE number = ?",
+                (num,)
+            )
+
+            result = cursor.fetchone()
+
+    if result is None:
+        return None
+    
+    pro_num = str(result[0])
+    while len(pro_num) < 9:
+        pro_num = '0' + pro_num
+    zip = str(result[5])
+    while len(zip) < 5:
+        zip = '0' + zip
+
+    return Provider(pro_num, result[1], result[2], result[3], result[4], zip)
 
 def insert_member(member: Member, database: str = "database.db") -> int:
     if type(member) is not Member:

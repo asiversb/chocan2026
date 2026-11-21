@@ -76,8 +76,15 @@ def test_insert_provider_wrong_type():
     with pytest.raises(ValueError):
         db.insert_provider("test", "test_database.db")
 
+def test_get_provider_valid():
+    assert valid_provider == db.get_provider(valid_provider.number, "test_database.db")
 
+def test_get_provider_invalid():
+    with pytest.raises(ValueError):
+        db.get_provider(invalid_provider.number, "test_database.db")
 
+def test_get_provider_doesnt_exist():
+    assert None == db.get_provider("987654321", "test_database.db")
 
 
 def test_insert_member_valid():
