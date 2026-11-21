@@ -301,6 +301,9 @@ def create_test_database(test_database_name: str) -> int:
                     provider_number INTEGER NOT NULL,
                     member_number INTEGER NOT NULL,
                     service_number INTEGER NOT NULL, 
+                    fee INTEGER NOT NULL,
+                    comment TEXT,
+                    
                     FOREIGN KEY (provider_number)
                         REFERENCES providers (number),
                     FOREIGN KEY (member_number) 
@@ -355,6 +358,9 @@ def create_database():
                     provider_number INTEGER NOT NULL,
                     member_number INTEGER NOT NULL,
                     service_number INTEGER NOT NULL, 
+                    fee INTEGER NOT NULL,
+                    comment TEXT,
+
                     FOREIGN KEY (provider_number)
                         REFERENCES providers (number),
                     FOREIGN KEY (member_number) 
