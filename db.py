@@ -178,13 +178,13 @@ def delete_member(num: str, database: str = "database.db") -> bool:
 
     
 
-def delete_test_database() -> int:
-    if os.path.exists("test_database.db"):
-        os.remove("test_database.db")
+def delete_test_database(test_database_name: str) -> int:
+    if os.path.exists(test_database_name):
+        os.remove(test_database_name)
     return 0
 
-def create_test_database() -> int:
-    with closing(sqlite3.connect("test_database.db")) as conn:
+def create_test_database(test_database_name: str) -> int:
+    with closing(sqlite3.connect(test_database_name)) as conn:
         with conn:
             cursor = conn.cursor()
 
