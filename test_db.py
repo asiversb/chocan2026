@@ -84,6 +84,16 @@ def test_insert_service_wrong_type():
     with pytest.raises(ValueError):
         db.insert_service("test", "test_database.db")
 
+def test_get_service_doesnt_exist():
+    assert None == db.get_service("987654", "test_database.db")
+
+def test_get_service_valid():
+    assert valid_service == db.get_service(valid_service.number, "test_database.db")
+
+def test_get_service_invalid():
+    with pytest.raises(ValueError):
+        db.get_service(invalid_service.number, "test_database.db")
+
 def test_insert_provider_valid():
     provider_number = db.insert_provider(valid_provider, "test_database.db")
 

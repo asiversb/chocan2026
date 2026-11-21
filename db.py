@@ -21,6 +21,29 @@ def insert_service(service: Service, database: str = "database.db") -> int:
                 
     return int(service.number)
 
+def get_service(num: str, database: str = "database.db") -> Service | None:
+    num = int(num)
+
+    with closing(sqlite3.connect(database)) as conn:
+        with conn:
+            cursor = conn.cursor()
+
+            cursor.execute(
+                "SELECT * FROM services WHERE number = ?",
+                (num,)
+            )
+
+            result = cursor.fetchone()
+
+    if result is None:
+        return None
+    
+    ser_num = str(result[0])
+    while len(ser_num) < 6:
+        ser_num = '0' + ser_num
+
+    return Service(ser_num, result[1], result[2])
+
 def insert_provider(provider: Provider, database: str = "database.db") -> int:
     if type(provider) is not Provider:
         raise ValueError("Expected a provider")
