@@ -41,8 +41,7 @@ invalid_provider = Provider(
 )
 
 def test_create_test_database():
-    assert db.create_test_database() == 0
-
+    assert db.create_test_database("test_database.db") == 0
 
 def test_insert_provider_valid():
     provider_number = db.insert_provider(valid_provider, "test_database.db")
@@ -185,4 +184,4 @@ def test_delete_member_invalid():
         db.delete_member(invalid_member.number, "test_database.db")
         
 def test_delete_test_database():
-    assert db.delete_test_database() == 0
+    assert db.delete_test_database("test_database.db") == 0
