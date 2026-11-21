@@ -66,6 +66,20 @@ def update_service(service: Service, database: str = "database.db") -> bool:
 
     return True 
 
+def delete_service(num: str, database: str = "database.db") -> bool:
+    num = int(num)
+
+    with closing(sqlite3.connect(database)) as conn:
+        with conn:
+            cursor = conn.cursor() 
+
+            cursor.execute(
+                "DELETE FROM services WHERE number = ?",
+                (num,)
+            )
+
+            return cursor.rowcount
+
 def insert_provider(provider: Provider, database: str = "database.db") -> int:
     if type(provider) is not Provider:
         raise ValueError("Expected a provider")

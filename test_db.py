@@ -111,6 +111,16 @@ def test_update_service_doesnt_exist():
     de = Service("444444","Name", 99999)
     assert False == db.update_service(de, "test_database.db")
 
+def test_delete_service_valid():
+    assert True == db.delete_service(valid_service.number, "test_database.db")
+
+def test_delete_service_doesnt_exist():
+    assert False == db.delete_service(valid_service.number, "test_database.db")
+
+def test_delete_service_invalid():
+    with pytest.raises(ValueError):
+        db.delete_service(invalid_service.number, "test_database.db")
+        
 def test_insert_provider_valid():
     provider_number = db.insert_provider(valid_provider, "test_database.db")
 
