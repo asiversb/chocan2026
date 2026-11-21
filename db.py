@@ -1,8 +1,27 @@
 import sqlite3
 import os
 from contextlib import closing
-from data import Member
+from data import Member, Provider
 
+def insert_provider(provider: Provider, database: str = "database.db") -> int:
+    if type(provider) is not Provider:
+        raise ValueError("Expected a provider")
+
+    with closing(sqlite3.connect(database)) as conn:
+        with conn:
+            cursor = conn.cursor()
+
+            cursor.execute("""
+                INSERT INTO providers (
+                    number, name, street, city, state, zip_code
+                )
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, (
+                int(provider.number), provider.name, provider.street, 
+                provider.city, provider.state, int(provider.zip_code)
+            ))
+                
+    return int(provider.number) 
 
 def insert_member(member: Member, database: str = "database.db") -> int:
     if type(member) is not Member:

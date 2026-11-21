@@ -2,7 +2,7 @@ import pytest
 import sqlite3
 from contextlib import closing
 import db
-from data import Member
+from data import Member, Provider
 
 valid_member = Member(
     "003456789",
@@ -22,8 +22,63 @@ invalid_member = Member(
     "work?"
 )
 
+valid_provider = Provider(
+    "000000789",
+    "Shane Man",
+    "123 Lane",
+    "Portland",
+    "OR",
+    "00001"
+)
+
+invalid_provider = Provider(
+    "00.45!000",
+    "Strange",
+    "456 Ave",
+    "Portland",
+    "OR",
+    "NOT E"
+)
+
 def test_create_test_database():
     assert db.create_test_database() == 0
+
+
+def test_insert_provider_valid():
+    provider_number = db.insert_provider(valid_provider, "test_database.db")
+
+    with closing(sqlite3.connect("test_database.db")) as conn:
+        with conn:
+            cursor = conn.cursor()
+
+            result = cursor.execute(
+                "SELECT * FROM providers WHERE number = ?",
+                (provider_number,)
+            ).fetchone()
+
+    assert result is not None
+    assert result[0] == 789
+    assert result[1] == "Shane Man"
+    assert result[2] == "123 Lane"
+    assert result[3] == "Portland"
+    assert result[4] == "OR"
+    assert result[5] == 1
+
+def test_insert_provider_duplicate():
+    with pytest.raises(sqlite3.IntegrityError):
+        db.insert_provider(valid_provider, "test_database.db")
+
+def test_insert_provider_invalid():
+    with pytest.raises(ValueError):
+        db.insert_provider(invalid_provider, "test_database.db")
+
+def test_insert_provider_wrong_type():
+    with pytest.raises(ValueError):
+        db.insert_provider("test", "test_database.db")
+
+
+
+
 
 def test_insert_member_valid():
     member_number = db.insert_member(valid_member, "test_database.db")
