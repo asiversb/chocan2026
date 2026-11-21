@@ -26,7 +26,6 @@ def insert_member(member: Member, database: str = "database.db") -> int:
                 
     return int(member.number)
 
-
 def get_member(num: str, database: str = "database.db") -> Member | None:
     num = int(num)
 
@@ -54,6 +53,31 @@ def get_member(num: str, database: str = "database.db") -> Member | None:
     return Member(mem_num, result[1], result[2], result[3], result[4],
                 zip, result[6], result[7])
 
+def update_member(member: Member, database: str = "database.db") -> bool:
+    if type(member) is not Member:
+        raise ValueError("Expected a Member") 
+
+    with closing(sqlite3.connect(database)) as conn:
+        with conn:
+            cursor = conn.cursor()
+
+            cursor.execute(
+                """
+                UPDATE members
+                SET name = ?, street = ?, city = ?,
+                state = ?, zip_code = ?, owes = ?, 
+                is_suspended = ?
+                WHERE number = ?
+                """,
+                (member.name, member.street, member.city,
+                member.state, int(member.zip_code), member.owes, 
+                member.is_suspended, int(member.number))
+            )
+
+        if cursor.rowcount == 0:
+            return False
+
+    return True
 
 def delete_test_database() -> int:
     if os.path.exists("test_database.db"):

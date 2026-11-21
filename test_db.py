@@ -21,6 +21,7 @@ invalid_member = Member(
     "OR",
     "work?"
 )
+
 def test_create_test_database():
     assert db.create_test_database() == 0
 
@@ -67,6 +68,23 @@ def test_get_member_invalid():
 
 def test_get_member_doesnt_exist():
     assert None == db.get_member("987654321", "test_database.db")
+
+def test_update_member_valid():
+    valid_member.name = "Jane Smith"
+    assert True == db.update_member(valid_member, "test_database.db")
+    assert db.get_member(valid_member.number, "test_database.db").name == "Jane Smith"
+
+def test_update_member_invalid():
+    with pytest.raises(ValueError):
+        db.update_member(invalid_member, "test_database.db")
+
+def test_update_member_wrong_type():
+    with pytest.raises(ValueError):
+        db.update_member("test", "test_database.db")
+
+def test_update_member_doesnt_exist():
+    de = Member("444444444","e", "e", "e", "EE", "55555")
+    assert False == db.update_member(de, "test_database.db")
 
 def test_delete_test_database():
     assert db.delete_test_database() == 0
