@@ -1,8 +1,91 @@
 import sqlite3
 import os
 from contextlib import closing
-from data import Member
+from data import Member, Provider
 
+def insert_provider(provider: Provider, database: str = "database.db") -> int:
+    if type(provider) is not Provider:
+        raise ValueError("Expected a provider")
+
+    with closing(sqlite3.connect(database)) as conn:
+        with conn:
+            cursor = conn.cursor()
+
+            cursor.execute("""
+                INSERT INTO providers (
+                    number, name, street, city, state, zip_code
+                )
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, (
+                int(provider.number), provider.name, provider.street, 
+                provider.city, provider.state, int(provider.zip_code)
+            ))
+                
+    return int(provider.number)
+
+def get_provider(num: str, database: str = "database.db") -> Provider | None:
+    num = int(num)
+
+    with closing(sqlite3.connect(database)) as conn:
+        with conn:
+            cursor = conn.cursor()
+
+            cursor.execute(
+                "SELECT * FROM providers WHERE number = ?",
+                (num,)
+            )
+
+            result = cursor.fetchone()
+
+    if result is None:
+        return None
+    
+    pro_num = str(result[0])
+    while len(pro_num) < 9:
+        pro_num = '0' + pro_num
+    zip = str(result[5])
+    while len(zip) < 5:
+        zip = '0' + zip
+
+    return Provider(pro_num, result[1], result[2], result[3], result[4], zip)
+
+def update_provider(provider: Provider, database: str = "database.db") -> bool:
+    if type(provider) is not Provider:
+        raise ValueError("Expected a provider") 
+
+    with closing(sqlite3.connect(database)) as conn:
+        with conn:
+            cursor = conn.cursor()
+
+            cursor.execute(
+                """ 
+                UPDATE providers
+                SET name = ?, street = ?, city = ?,
+                state = ?, zip_code = ?
+                WHERE number = ?
+                """ ,
+                (provider.name, provider.street, provider.city,
+                provider.state, int(provider.zip_code), int(provider.number))
+            )
+
+        if cursor.rowcount == 0:
+            return False
+
+    return True 
+
+def delete_provider(num: str, database: str = "database.db") -> bool:
+    num = int(num)
+
+    with closing(sqlite3.connect(database)) as conn:
+        with conn:
+            cursor = conn.cursor() 
+
+            cursor.execute(
+                "DELETE FROM providers WHERE number = ?",
+                (num,)
+            )
+
+            return cursor.rowcount
 
 def insert_member(member: Member, database: str = "database.db") -> int:
     if type(member) is not Member:
