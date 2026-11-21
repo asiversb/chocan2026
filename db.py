@@ -79,6 +79,22 @@ def update_member(member: Member, database: str = "database.db") -> bool:
 
     return True
 
+def delete_member(num: str, database: str = "database.db") -> bool:
+    num = int(num)
+
+    with closing(sqlite3.connect(database)) as conn:
+        with conn:
+            cursor = conn.cursor() 
+
+            cursor.execute(
+                "DELETE FROM members WHERE number = ?",
+                (num,)
+            )
+
+            return cursor.rowcount
+
+    
+
 def delete_test_database() -> int:
     if os.path.exists("test_database.db"):
         os.remove("test_database.db")

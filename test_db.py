@@ -86,5 +86,15 @@ def test_update_member_doesnt_exist():
     de = Member("444444444","e", "e", "e", "EE", "55555")
     assert False == db.update_member(de, "test_database.db")
 
+def test_delete_member_valid():
+    assert True == db.delete_member(valid_member.number, "test_database.db")
+
+def test_delete_member_doesnt_exist():
+    assert False == db.delete_member(valid_member.number, "test_database.db")
+
+def test_delete_member_invalid():
+    with pytest.raises(ValueError):
+        db.delete_member(invalid_member.number, "test_database.db")
+        
 def test_delete_test_database():
     assert db.delete_test_database() == 0
