@@ -1,7 +1,25 @@
 import sqlite3
 import os
 from contextlib import closing
-from data import Member, Provider
+from data import Member, Provider, Service
+
+def insert_service(service: Service, database: str = "database.db") -> int:
+    if type(service) is not Service:
+        raise ValueError("Expected a service")
+
+    with closing(sqlite3.connect(database)) as conn:
+        with conn:
+            cursor = conn.cursor()
+
+            cursor.execute("""
+                INSERT INTO services (
+                    number, name, fee
+                )
+                VALUES (?, ?, ?)
+            """, (int(service.number), service.name, service.fee)
+            )
+                
+    return int(service.number)
 
 def insert_provider(provider: Provider, database: str = "database.db") -> int:
     if type(provider) is not Provider:

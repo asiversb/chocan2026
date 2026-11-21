@@ -2,7 +2,7 @@ import pytest
 import sqlite3
 from contextlib import closing
 import db
-from data import Member, Provider
+from data import Member, Provider, Service
 
 valid_member = Member(
     "003456789",
@@ -40,8 +40,49 @@ invalid_provider = Provider(
     "NOT E"
 )
 
+valid_service = Service(
+    "000456",
+    "Massage",
+    500
+)
+
+invalid_service = Service(
+    "testin",
+    "the function",
+    400
+)
+
 def test_create_test_database():
     assert db.create_test_database("test_database.db") == 0
+
+def test_insert_service_valid():
+    service_number = db.insert_service(valid_service, "test_database.db")
+
+    with closing(sqlite3.connect("test_database.db")) as conn:
+        with conn:
+            cursor = conn.cursor()
+
+            result = cursor.execute(
+                "SELECT * FROM services WHERE number = ?",
+                (service_number,)
+            ).fetchone()
+
+    assert result is not None
+    assert result[0] == 456
+    assert result[1] == "Massage"
+    assert result[2] == 500
+
+def test_insert_service_duplicate():
+    with pytest.raises(sqlite3.IntegrityError):
+        db.insert_service(valid_service, "test_database.db")
+
+def test_insert_service_invalid():
+    with pytest.raises(ValueError):
+        db.insert_service(invalid_service, "test_database.db")
+
+def test_insert_service_wrong_type():
+    with pytest.raises(ValueError):
+        db.insert_service("test", "test_database.db")
 
 def test_insert_provider_valid():
     provider_number = db.insert_provider(valid_provider, "test_database.db")
