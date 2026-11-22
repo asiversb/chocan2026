@@ -3,6 +3,40 @@ import os
 from contextlib import closing
 from data import Member, Provider, Service, Transaction
 
+def get_trans_by_pro(provider_number: str, database: str = "database.db") -> list[Transaction] | None:
+    provider_number = int(provider_number)
+
+    with closing(sqlite3.connect(database)) as conn:
+        with conn:
+            cursor = conn.cursor()
+
+            cursor.execute(
+                "SELECT * FROM transactions WHERE provider_number = ?",
+                (provider_number,)
+            )
+
+            result = cursor.fetchall() 
+
+    if not result:
+        return None
+    
+    transactions = []
+    for record in result:
+        pro_num = str(record[3])
+        while len(pro_num) < 9:
+            pro_num = '0' + pro_num
+        mem_num = str(record[4])
+        while len(mem_num) < 9:
+            mem_num = '0' + mem_num
+        ser_num = str(record[5])
+        while len(ser_num) < 6:
+            ser_num = '0' + ser_num
+        new = Transaction(record[1], record[2], pro_num, mem_num, ser_num,
+                          record[6], record[7])
+        transactions.append(new)
+
+    return transactions
+
 def get_trans_by_mem(member_number: str, database: str = "database.db") -> list[Transaction] | None:
     member_number = int(member_number)
 

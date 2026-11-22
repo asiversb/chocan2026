@@ -142,6 +142,17 @@ def test_get_trans_by_mem_wrong_type():
 def test_get_trans_by_mem_doesnt_exist():
     assert None == db.get_trans_by_mem("999999999", "test_database.db")
 
+def test_get_trans_by_pro_valid():
+    ans = [valid_transaction, valid_transaction] 
+    assert ans == db.get_trans_by_pro(valid_provider.number, "test_database.db")
+
+def test_get_trans_by_pro_wrong_type():
+    with pytest.raises(ValueError):
+        db.get_trans_by_pro("this won't work", "test_database.db")
+
+def test_get_trans_by_pro_doesnt_exist():
+    assert None == db.get_trans_by_pro("999999999", "test_database.db")
+
 def test_insert_transaction_delete():
     db.delete_member(valid_member.number, "test_database.db")
     db.delete_provider(valid_provider.number, "test_database.db")
