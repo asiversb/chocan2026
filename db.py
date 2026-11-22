@@ -3,6 +3,57 @@ import os
 from contextlib import closing
 from data import Member, Provider, Service, Transaction
 
+
+"""
+--- FOR TEAM ---
+Glossary:
+db.insert_member(Member) -> member_number
+db.get_member(member_number) -> Member | None
+db.update_member(Member) -> bool
+db.delete_member(member_number) -> bool 
+
+db.insert_provider(Provider) -> provider_number
+db.get_provider(provider_number) -> Provider | None
+db.update_provider(Provider) -> bool
+db.delete_provider(provider_number) -> bool 
+
+db.insert_service(Service) -> service_number
+db.get_service(service_number) -> Service | None
+db.update_service(Service) -> bool
+db.delete_service(service_number) -> bool 
+
+db.insert_transaction(Transaction) -> id
+db.get_trans_by_mem(member_number) -> list[Transaction]
+db.get_trans_by_pro(provider_number) -> list[Transaction]
+
+For testing:
+You can use the main database, database.db, to test if you want. 
+However, it could lead to errors. For example, if you test an 
+insert member function twice in a row, it could fail the second
+time because the member is already in the database. 
+
+To make it easier for me to, I created functions
+that create and delete a temporary testing database. I added an optional
+second parameter to every function, a string that is the name of
+the test database, so that the function interacts with that
+database instead of the main one. Here's how you use it:
+
+CREATE DATABASE FIRST
+test_create_test_database():
+    create_test_database("test.db")
+
+test_example_one():
+    assert 0 == func1(argument, "test.db")
+
+test_example_two():
+    assert 0 == func2(argument, "test.db")
+
+DELETE DATABASE AFTER TESTS
+test_delete_test_database():
+    delete_test_database("test.db")
+
+"""
+
 def get_trans_by_pro(provider_number: str, database: str = "database.db") -> list[Transaction] | None:
     provider_number = int(provider_number)
 
@@ -156,8 +207,8 @@ def update_service(service: Service, database: str = "database.db") -> bool:
                 (service.name, service.fee, int(service.number))
             )
 
-        if cursor.rowcount == 0:
-            return False
+            if cursor.rowcount == 0:
+                return False
 
     return True 
 
@@ -240,8 +291,8 @@ def update_provider(provider: Provider, database: str = "database.db") -> bool:
                 provider.state, int(provider.zip_code), int(provider.number))
             )
 
-        if cursor.rowcount == 0:
-            return False
+            if cursor.rowcount == 0:
+                return False
 
     return True 
 
@@ -329,8 +380,8 @@ def update_member(member: Member, database: str = "database.db") -> bool:
                 member.is_suspended, int(member.number))
             )
 
-        if cursor.rowcount == 0:
-            return False
+            if cursor.rowcount == 0:
+                return False
 
     return True
 
