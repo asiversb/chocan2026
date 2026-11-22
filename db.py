@@ -1,8 +1,103 @@
 import sqlite3
 import os
 from contextlib import closing
-from data import Member, Provider, Service
+from data import Member, Provider, Service, Transaction
 
+def get_trans_by_pro(provider_number: str, database: str = "database.db") -> list[Transaction] | None:
+    provider_number = int(provider_number)
+
+    with closing(sqlite3.connect(database)) as conn:
+        with conn:
+            cursor = conn.cursor()
+
+            cursor.execute(
+                "SELECT * FROM transactions WHERE provider_number = ?",
+                (provider_number,)
+            )
+
+            result = cursor.fetchall() 
+
+    if not result:
+        return None
+    
+    transactions = []
+    for record in result:
+        pro_num = str(record[3])
+        while len(pro_num) < 9:
+            pro_num = '0' + pro_num
+        mem_num = str(record[4])
+        while len(mem_num) < 9:
+            mem_num = '0' + mem_num
+        ser_num = str(record[5])
+        while len(ser_num) < 6:
+            ser_num = '0' + ser_num
+        new = Transaction(record[1], record[2], pro_num, mem_num, ser_num,
+                          record[6], record[7])
+        transactions.append(new)
+
+    return transactions
+
+def get_trans_by_mem(member_number: str, database: str = "database.db") -> list[Transaction] | None:
+    member_number = int(member_number)
+
+    with closing(sqlite3.connect(database)) as conn:
+        with conn:
+            cursor = conn.cursor()
+
+            cursor.execute(
+                "SELECT * FROM transactions WHERE member_number = ?",
+                (member_number,)
+            )
+
+            result = cursor.fetchall() 
+
+    if not result:
+        return None
+    
+    transactions = []
+    for record in result:
+        pro_num = str(record[3])
+        while len(pro_num) < 9:
+            pro_num = '0' + pro_num
+        mem_num = str(record[4])
+        while len(mem_num) < 9:
+            mem_num = '0' + mem_num
+        ser_num = str(record[5])
+        while len(ser_num) < 6:
+            ser_num = '0' + ser_num
+        new = Transaction(record[1], record[2], pro_num, mem_num, ser_num,
+                          record[6], record[7])
+        transactions.append(new)
+
+    return transactions
+
+def insert_transaction(transaction: Transaction, database: str = "database.db") -> int:
+    if type(transaction) is not Transaction:
+        raise ValueError("Expected a transaction")
+
+    with closing(sqlite3.connect(database)) as conn:
+        with conn:
+            cursor = conn.cursor()
+
+            cursor.execute("PRAGMA foreign_keys = ON;")
+
+            cursor.execute(""" 
+                INSERT INTO transactions (
+                    created_at, provided_on, provider_number,
+                    member_number, service_number, fee, comment
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            """, (transaction.created_at, transaction.provided_on,
+                  int(transaction.provider_number), 
+                  int(transaction.member_number),
+                  int(transaction.service_number),
+                  transaction.fee, transaction.comment)
+            )
+
+            transaction_id = cursor.lastrowid
+                
+    return transaction_id
+    
 def insert_service(service: Service, database: str = "database.db") -> int:
     if type(service) is not Service:
         raise ValueError("Expected a service")

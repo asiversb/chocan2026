@@ -47,8 +47,8 @@ class Service:
 
 @dataclass
 class Transaction:
-    provided_on: str
     created_at: str
+    provided_on: str
     provider_number: str
     member_number: str    #str for leading 0's?
     service_number: str     #str for leading 0's?
@@ -70,7 +70,7 @@ class Transaction:
             raise ValueError("Provider number must be an exact 9-digit string.")
         if len(self.member_number) != 9 or not self.member_number.isdigit():
             raise ValueError("Member number must be an exact 9-digit string.")
-        if len(self.service_code) != 6 or not self.service_number.isdigit():
+        if len(self.service_number) != 6 or not self.service_number.isdigit():
             raise ValueError("Service code must be an exact 6-digit string.")
         if not (0 <= self.fee <= 99999):
             raise ValueError("Fee must be between $0.00 and $999.99.")
