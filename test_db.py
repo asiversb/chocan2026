@@ -2,7 +2,7 @@ import pytest
 import sqlite3
 from contextlib import closing
 import db
-from data import Member, Provider, Service
+from data import Member, Provider, Service, Transaction
 
 valid_member = Member(
     "003456789",
@@ -52,8 +52,89 @@ invalid_service = Service(
     400
 )
 
+valid_transaction = Transaction(
+    "11-21-2026",
+    "11-21-2026 04:06:00",
+    valid_provider.number,
+    valid_member.number,
+    valid_service.number,
+    valid_service.fee,
+    "Hello there!"
+)
+
+invalid_transaction = Transaction(
+    "11-21-2026",
+    "11-21-2026 04:06:00",
+    valid_provider.number,
+    "678452123",
+    valid_service.number,
+    valid_service.fee,
+    "Hello there!" 
+)
+
 def test_create_test_database():
     assert db.create_test_database("test_database.db") == 0
+
+def test_insert_transaction_valid():
+    db.insert_member(valid_member, "test_database.db")
+    db.insert_provider(valid_provider, "test_database.db")
+    db.insert_service(valid_service, "test_database.db")
+
+    transaction_id = db.insert_transaction(valid_transaction, "test_database.db")
+
+    with closing(sqlite3.connect("test_database.db")) as conn:
+        with conn:
+            cursor = conn.cursor()
+
+            result = cursor.execute(
+                "SELECT * FROM transactions WHERE id = ?",
+                (transaction_id,)
+            ).fetchone()
+
+    assert result is not None
+    assert result[0] == transaction_id
+    assert result[2] == "11-21-2026"
+    assert result[1] == "11-21-2026 04:06:00"
+    assert result[3] == int(valid_provider.number)
+    assert result[4] == int(valid_member.number)
+    assert result[5] == int(valid_service.number)
+    assert result[6] == valid_service.fee
+    assert result[7] == "Hello there!"
+
+def test_insert_transaction_duplicate():
+    transaction_id = db.insert_transaction(valid_transaction, "test_database.db")
+
+    with closing(sqlite3.connect("test_database.db")) as conn:
+        with conn:
+            cursor = conn.cursor()
+
+            result = cursor.execute(
+                "SELECT * FROM transactions WHERE id = ?",
+                (transaction_id,)
+            ).fetchone()
+
+    assert result is not None
+    assert result[0] == transaction_id
+    assert result[2] == "11-21-2026"
+    assert result[1] == "11-21-2026 04:06:00"
+    assert result[3] == int(valid_provider.number)
+    assert result[4] == int(valid_member.number)
+    assert result[5] == int(valid_service.number)
+    assert result[6] == valid_service.fee
+    assert result[7] == "Hello there!"
+    
+def test_insert_transaction_invalid():
+    with pytest.raises(sqlite3.IntegrityError):
+        db.insert_transaction(invalid_transaction, "test_database.db")
+
+def test_insert_transaction_wrong_type():
+    with pytest.raises(ValueError):
+        db.insert_transaction("test", "test_database.db")
+
+def test_insert_transaction_delete():
+    db.delete_member(valid_member.number, "test_database.db")
+    db.delete_provider(valid_provider.number, "test_database.db")
+    db.delete_service(valid_service.number, "test_database.db")
 
 def test_insert_service_valid():
     service_number = db.insert_service(valid_service, "test_database.db")

@@ -1,8 +1,35 @@
 import sqlite3
 import os
 from contextlib import closing
-from data import Member, Provider, Service
+from data import Member, Provider, Service, Transaction
 
+def insert_transaction(transaction: Transaction, database: str = "database.db") -> int:
+    if type(transaction) is not Transaction:
+        raise ValueError("Expected a transaction")
+
+    with closing(sqlite3.connect(database)) as conn:
+        with conn:
+            cursor = conn.cursor()
+
+            cursor.execute("PRAGMA foreign_keys = ON;")
+            
+            cursor.execute(""" 
+                INSERT INTO transactions (
+                    created_at, provided_on, provider_number,
+                    member_number, service_number, fee, comment
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            """, (transaction.created_at, transaction.provided_on,
+                  int(transaction.provider_number), 
+                  int(transaction.member_number),
+                  int(transaction.service_number),
+                  transaction.fee, transaction.comment)
+            )
+
+            transaction_id = cursor.lastrowid
+                
+    return transaction_id
+    
 def insert_service(service: Service, database: str = "database.db") -> int:
     if type(service) is not Service:
         raise ValueError("Expected a service")
