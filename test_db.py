@@ -122,7 +122,7 @@ def test_insert_transaction_duplicate():
     assert result[5] == int(valid_service.number)
     assert result[6] == valid_service.fee
     assert result[7] == "Hello there!"
-    
+
 def test_insert_transaction_invalid():
     with pytest.raises(sqlite3.IntegrityError):
         db.insert_transaction(invalid_transaction, "test_database.db")
@@ -130,6 +130,17 @@ def test_insert_transaction_invalid():
 def test_insert_transaction_wrong_type():
     with pytest.raises(ValueError):
         db.insert_transaction("test", "test_database.db")
+
+def test_get_trans_by_mem_valid():
+    ans = [valid_transaction, valid_transaction] 
+    assert ans == db.get_trans_by_mem(valid_member.number, "test_database.db")
+
+def test_get_trans_by_mem_wrong_type():
+    with pytest.raises(ValueError):
+        db.get_trans_by_mem("this won't work", "test_database.db")
+
+def test_get_trans_by_mem_doesnt_exist():
+    assert None == db.get_trans_by_mem("999999999", "test_database.db")
 
 def test_insert_transaction_delete():
     db.delete_member(valid_member.number, "test_database.db")
