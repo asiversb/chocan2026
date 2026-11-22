@@ -47,8 +47,8 @@ class Service:
 
 @dataclass
 class Transaction:
-    provided_on: str
     created_at: str
+    provided_on: str
     provider_number: str
     member_number: str    #str for leading 0's?
     service_number: str     #str for leading 0's?

@@ -31,7 +31,7 @@ def get_trans_by_mem(member_number: str, database: str = "database.db") -> list[
         ser_num = str(record[5])
         while len(ser_num) < 6:
             ser_num = '0' + ser_num
-        new = Transaction(record[2], record[1], pro_num, mem_num, ser_num,
+        new = Transaction(record[1], record[2], pro_num, mem_num, ser_num,
                           record[6], record[7])
         transactions.append(new)
 

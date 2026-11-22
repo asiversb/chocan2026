@@ -53,8 +53,8 @@ invalid_service = Service(
 )
 
 valid_transaction = Transaction(
-    "11-21-2026",
     "11-21-2026 04:06:00",
+    "11-21-2026",
     valid_provider.number,
     valid_member.number,
     valid_service.number,
@@ -63,8 +63,8 @@ valid_transaction = Transaction(
 )
 
 invalid_transaction = Transaction(
-    "11-21-2026",
     "11-21-2026 04:06:00",
+    "11-21-2026",
     valid_provider.number,
     "678452123",
     valid_service.number,
@@ -93,8 +93,8 @@ def test_insert_transaction_valid():
 
     assert result is not None
     assert result[0] == transaction_id
-    assert result[2] == "11-21-2026"
     assert result[1] == "11-21-2026 04:06:00"
+    assert result[2] == "11-21-2026"
     assert result[3] == int(valid_provider.number)
     assert result[4] == int(valid_member.number)
     assert result[5] == int(valid_service.number)
@@ -115,8 +115,8 @@ def test_insert_transaction_duplicate():
 
     assert result is not None
     assert result[0] == transaction_id
-    assert result[2] == "11-21-2026"
     assert result[1] == "11-21-2026 04:06:00"
+    assert result[2] == "11-21-2026"
     assert result[3] == int(valid_provider.number)
     assert result[4] == int(valid_member.number)
     assert result[5] == int(valid_service.number)
